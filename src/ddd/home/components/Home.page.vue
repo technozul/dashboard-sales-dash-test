@@ -269,7 +269,7 @@ onMounted(() => {
 <style scoped lang="scss">
 @import '@/assets/styles/sass/base.scss';
 .card-trio-wrapper {
-  @apply flex mb-[40px] gap-[32px];
+  @apply flex flex-col md:flex-row mb-[40px] gap-[32px];
   .card-trio {
     @extend .card-base;
     @apply basis-1/3;
@@ -286,7 +286,7 @@ onMounted(() => {
 }
 
 .middle-content-wrapper {
-  @apply flex gap-[32px];
+  @apply flex flex-col md:flex-row gap-[32px];
   .middle-content-left {
     @apply flex flex-col basis-2/3;
     .card-chart {
@@ -299,9 +299,9 @@ onMounted(() => {
         @apply text-sd-muted-2 font-bold mb-[16px];
       }
       .items {
-        @apply flex gap-[16px];
+        @apply flex gap-[16px] flex-wrap md:justify-center;
         li {
-          @apply font-bold flex flex-col gap-[4px] justify-center items-center border-[3px] border-sd-primary p-[16px] rounded-[12px] max-w-[128px];
+          @apply font-bold flex flex-1 flex-col gap-[4px] justify-center items-center border-[3px] border-sd-primary p-[16px] rounded-[12px] md:max-w-[120px];
           .item-image {
             @apply w-[54px] h-[54px];
           }

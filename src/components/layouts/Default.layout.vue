@@ -1,6 +1,31 @@
 <template>
-  <div class="flex grow">
-    <nav class="main-nav">
+  <div class="main">
+    <header class="main-header">
+      <Bars3Icon
+        v-if="!isNavbarActive"
+        class="action"
+        @click="toggleNavbar"
+      ></Bars3Icon>
+      <XMarkIcon v-else class="action" @click="toggleNavbar"></XMarkIcon>
+      <span class="nav-text">SalesDash</span>
+      <span class="icon"></span>
+      <div
+        class="action-show"
+        @click="isSidebarRightActive = !isSidebarRightActive"
+      >
+        <ChevronLeftIcon
+          v-if="!isSidebarRightActive"
+          class="icon"
+        ></ChevronLeftIcon>
+      </div>
+    </header>
+
+    <nav
+      class="main-nav"
+      :class="{
+        active: isNavbarActive
+      }"
+    >
       <div class="nav-logo">
         <span class="nav-text">SalesDash</span>
       </div>
@@ -33,21 +58,23 @@
         <li>
           <a
             href=""
-            @click.prevent="isChildrenMenuShow = !isChildrenMenuShow"
+            @click.prevent="
+              isNavbarChildrenMenuShow = !isNavbarChildrenMenuShow
+            "
             class="nav-link"
           >
             <NavIconChannel class="icon"></NavIconChannel>
-            <span class="text mr-[56px]">Channel</span>
+            <span class="text">Channel</span>
             <ChevronDownIcon
-              v-if="!isChildrenMenuShow"
-              class="w-4 h-4"
+              v-if="!isNavbarChildrenMenuShow"
+              class="chevron"
             ></ChevronDownIcon>
-            <ChevronUpIcon v-else class="w-4 h-4"></ChevronUpIcon>
+            <ChevronUpIcon v-else class="chevron"></ChevronUpIcon>
           </a>
           <transition>
             <ul
               class="nav-item-container nav-children"
-              v-if="isChildrenMenuShow"
+              v-if="isNavbarChildrenMenuShow"
             >
               <li>
                 <a href="" class="nav-link">
@@ -86,20 +113,34 @@
       </ul>
     </nav>
 
-    <div class="flex-1 px-[56px] py-[32px]">
+    <div class="main-content">
       <HomePage></HomePage>
     </div>
 
-    <div class="sidebar-right">
+    <div class="sidebar-right" :class="{ active: isSidebarRightActive }">
+      <div
+        class="action-show"
+        :class="{
+          block: isSidebarRightActive
+        }"
+        @click="isSidebarRightActive = !isSidebarRightActive"
+      >
+        <ChevronLeftIcon
+          v-if="!isSidebarRightActive"
+          class="icon"
+        ></ChevronLeftIcon>
+        <ChevronRightIcon v-else class="icon"></ChevronRightIcon>
+      </div>
+
       <div class="user-control-wrapper">
-        <div
-          class="user-control"
-          @click="isUserControlActive = !isUserControlActive"
-        >
+        <div class="user-control">
           <div class="user-avatar-wrapper">
             <img :src="AvatarUser1" alt="" class="user-avatar" />
           </div>
-          <div class="user-description">
+          <div
+            class="user-description"
+            @click="isUserControlActive = !isUserControlActive"
+          >
             <span class="user-name">Budi Budiman</span>
             <span class="user-title">Owner at PT Suka Maju</span>
           </div>
@@ -142,21 +183,61 @@ import NavIconLogout from '@/assets/icons/nav-icon-logout.svg';
 import {
   EllipsisVerticalIcon,
   ChevronDownIcon,
-  ChevronUpIcon
+  ChevronUpIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
+  Bars3Icon,
+  XMarkIcon
 } from '@heroicons/vue/24/solid';
 import HomePage from '@/ddd/home/components/Home.page.vue';
 import { ref } from 'vue';
 
-const isChildrenMenuShow = ref(false);
+const isNavbarChildrenMenuShow = ref(false);
 const isUserControlActive = ref(false);
+const isNavbarActive = ref(false);
+const isSidebarRightActive = ref(false);
+
+function toggleNavbar() {
+  isNavbarActive.value = !isNavbarActive.value;
+}
 </script>
 
 <style scoped lang="scss">
 @import '@/assets/styles/sass/base.scss';
+.main {
+  @apply flex flex-col md:flex-row w-full relative;
+}
+
+.main-header {
+  @apply flex justify-between items-center bg-sd-secondary-1 px-[32px] py-[24px] md:hidden;
+  -webkit-box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
+  -moz-box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
+  box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
+
+  .action {
+    @apply w-7 h-7 cursor-pointer text-sd-blacky;
+  }
+
+  .action-show {
+    @apply fixed z-[30] p-[7px] right-0 top-[128px] bg-sd-secondary-2 rounded-l cursor-pointer;
+    .icon {
+      @apply w-[21px] h-[42px];
+    }
+  }
+
+  .nav-text {
+    @apply text-sd-primary text-[29px] font-bold;
+  }
+}
+
 .main-nav {
-  @apply w-[280px] justify-center bg-sd-secondary-1;
+  &.active {
+    @apply block;
+  }
+
+  @apply flex flex-col min-w-[280px] bg-sd-secondary-1 hidden z-[10] min-h-full md:block;
   .nav-logo {
-    @apply flex justify-center pt-[45px] pb-[32px];
+    @apply flex justify-center text-center pt-[45px] pb-[32px] hidden md:block;
     .nav-text {
       @apply text-sd-primary text-[29px] font-bold;
     }
@@ -165,7 +246,11 @@ const isUserControlActive = ref(false);
   .nav-item-container {
     @apply flex flex-col gap-[24px] py-[32px];
     li {
-      @apply flex-col items-center font-bold;
+      .chevron {
+        @apply w-4 h-4 absolute right-[48px];
+      }
+
+      @apply flex-col items-center font-bold relative;
       .nav-link {
         @apply flex items-center gap-[16px] grow pl-[54.5px] py-[12px] hover:bg-sd-secondary-2;
         .icon {
@@ -190,8 +275,23 @@ const isUserControlActive = ref(false);
   }
 }
 
+.main-content {
+  @apply flex-1 px-[32px] md:px-[56px] py-[32px] grow;
+}
+
 .sidebar-right {
-  @apply flex flex-col bg-sd-secondary-2 p-[32px] w-[408px];
+  @apply flex flex-col bg-sd-secondary-2 p-[32px] md:min-w-[408px] max-w-[320px] z-[20] hidden md:block fixed md:relative right-0 min-h-full;
+
+  &.active {
+    @apply block;
+  }
+
+  .action-show {
+    @apply p-[7px] left-[-34px] top-[128px] bg-sd-secondary-2 rounded-l cursor-pointer absolute md:hidden;
+    .icon {
+      @apply w-[21px] h-[42px];
+    }
+  }
 
   .user-control-wrapper {
     @apply flex flex-col;
@@ -232,10 +332,10 @@ const isUserControlActive = ref(false);
       }
     }
     .amount {
-      @apply text-[32px] font-bold mb-[24px];
+      @apply text-[24px] md:text-[32px] font-bold mb-[24px];
     }
     .action {
-      @apply bg-sd-primary rounded-[12px] px-[32px] py-[15px] w-[277px] h-[57px] text-white text-[18px] font-bold hover:brightness-[0.85];
+      @apply bg-sd-primary rounded-[12px] px-[32px] py-[15px] max-w-[277px] w-full h-[57px] text-white text-[18px] font-bold hover:brightness-[0.85];
     }
   }
 }
